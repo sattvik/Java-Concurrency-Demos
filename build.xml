@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  Copyright © 2010-2011 Daniel Solano Gómez
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  1. Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+
+  2. Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in
+  the documentation and/or other materials provided with the
+  distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  -->
+
+<project name="demos">
+    <description>
+        Demos for the Java concurrency talk.
+    </description>
+
+    <property file="default.properties"/>
+
+    <path id="demo.classpath">
+        <pathelement path="${build.classes.dir}"/>
+    </path>
+
+    <macrodef name="executor-demo">
+        <attribute name="type"/>
+        <sequential>
+            <java classname="${demo.executor.class}"
+                  classpathref="demo.classpath">
+                <arg value="@{type}"/>
+            </java>
+        </sequential>
+    </macrodef>
+
+    <target name="demo-executor-fixed" depends="compile"
+            description="Runs the executor demo with a fixed pool executor">
+        <executor-demo type="fixed"/>
+    </target>
+
+    <target name="demo-executor-cached" depends="compile"
+            description="Runs the executor demo with a cached pool executor">
+        <executor-demo type="cached"/>
+    </target>
+
+    <target name="demo-executor-single" depends="compile"
+            description="Runs the executor demo with a single threaded executor">
+        <executor-demo type="single"/>
+    </target>
+
+    <target name="demo-executor-scheduled" depends="compile"
+            description="Runs the scheduled executor demo">
+        <java classname="${demo.scheduled-executor.class}"
+              classpathref="demo.classpath">
+        </java>
+    </target>
+
+    <macrodef name="atomic-demo">
+        <attribute name="num-threads"/>
+        <attribute name="lock"/>
+        <sequential>
+            <java classname="${demo.atomic.class}"
+                  classpathref="demo.classpath"
+                  fork="yes">
+                <arg value="@{num-threads}"/>
+                <arg value="@{lock}"/>
+            </java>
+        </sequential>
+    </macrodef>
+
+    <target name="demo-atomic-lock-1" depends="compile"
+            description="Runs the atomic demo using a locking implementation in a single thread">
+        <atomic-demo num-threads="1" lock="lock"/>
+    </target>
+
+    <target name="demo-atomic-lock-2" depends="compile"
+            description="Runs the atomic demo using a locking implementation with two threads">
+        <atomic-demo num-threads="2" lock="lock"/>
+    </target>
+
+    <target name="demo-atomic-lock-4" depends="compile"
+            description="Runs the atomic demo using a locking implementation with four threads">
+        <atomic-demo num-threads="4" lock="lock"/>
+    </target>
+
+    <target name="demo-atomic-lock-8" depends="compile"
+            description="Runs the atomic demo using a locking implementation with eight threads">
+        <atomic-demo num-threads="8" lock="lock"/>
+    </target>
+
+    <target name="demo-atomic-nolock-1" depends="compile"
+            description="Runs the atomic demo using a non-locking implementation in a single thread">
+        <atomic-demo num-threads="1" lock="nolock"/>
+    </target>
+
+    <target name="demo-atomic-nolock-2" depends="compile"
+            description="Runs the atomic demo using a non-locking implementation with two threads">
+        <atomic-demo num-threads="2" lock="nolock"/>
+    </target>
+
+    <target name="demo-atomic-nolock-4" depends="compile"
+            description="Runs the atomic demo using a non-locking implementation with four threads">
+        <atomic-demo num-threads="4" lock="nolock"/>
+    </target>
+
+    <target name="demo-atomic-nolock-8" depends="compile"
+            description="Runs the atomic demo using a non-locking implementation with eight threads">
+        <atomic-demo num-threads="8" lock="nolock"/>
+    </target>
+
+    <target name="demo-modification-failed" depends="compile"
+            description="Runs the concurrent modification demo">
+        <java classname="${demo.concurrent-modifier.class}"
+              classpathref="demo.classpath">
+        </java>
+    </target>
+
+    <target name="compile" depends="compile.java"/>
+
+    <target name="compile.java" depends="compile.init">
+        <javac destdir="${build.classes.dir}"
+               srcdir="${src.java.dir}"
+               includeantruntime="false"
+               source="1.6"
+               target="1.6">
+        </javac>
+    </target>
+
+    <target name="compile.init" depends="init">
+        <mkdir dir="${build.classes.dir}"/>
+    </target>
+
+    <target name="init">
+        <mkdir dir="${build.dir}"/>
+    </target>
+</project>
